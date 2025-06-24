@@ -1,0 +1,19 @@
+/* CSS File for Tic-Tac-Toe Project */
+
+:root {
+    --bg-white: #F5F5F5;
+    --bg-gray: #E8E8E8;
+    --btn-green: #7CFC00;
+    --btn-red: #F88379;
+    --btn-blue: black;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}

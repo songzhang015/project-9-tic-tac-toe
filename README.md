@@ -1,1 +1,2 @@
-# project-9-tic-tac-toe
+# Library
+- Tic-Tac-Toe using HTML, CSS, and basic JS with objects
