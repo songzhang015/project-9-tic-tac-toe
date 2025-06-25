@@ -29,7 +29,9 @@ const board = (function initializeBoard() {
     function setCell(row, col, val) {
         if (gameBoard[row][col] == null) {
             gameBoard[row][col] = val;
+            return true;
         }
+        return false;
     }
 
     function getCell(row, col) {
@@ -47,12 +49,12 @@ const board = (function initializeBoard() {
         return true;
     }
 
-    function isWin(player) {
+    function isWin(val) {
         // Rows
         for (let i = 0; i < 3; i++) {
             let rowWin = true;
             for (let j = 0; j < 3; j++) {
-                if (gameBoard[i][j] != player) {
+                if (gameBoard[i][j] != val) {
                     rowWin = false;
                     break;
                 }
@@ -66,7 +68,7 @@ const board = (function initializeBoard() {
         for (let i = 0; i < 3; i++) {
             let colWin = true;
             for (let j = 0; j < 3; j++) {
-                if (gameBoard[j][i] != player) {
+                if (gameBoard[j][i] != val) {
                     colWin = false;
                     break;
                 }
@@ -79,7 +81,7 @@ const board = (function initializeBoard() {
         // Diagonals
         let diagonalWin1 = true;
         for (let i = 0; i < 3; i++) {
-            if (gameBoard[i][i] != player) {
+            if (gameBoard[i][i] != val) {
                 diagonalWin1 = false;
                 break;
             }
@@ -90,7 +92,7 @@ const board = (function initializeBoard() {
 
         let diagonalWin2 = true;
         for (let i = 0; i < 3; i++) {
-            if (gameBoard[i][2 - i] != player) {
+            if (gameBoard[i][2 - i] != val) {
                 diagonalWin2 = false;
                 break;
             }
@@ -158,13 +160,39 @@ function testBoard() {
 
 const displayController = (function () {
 
-  function renderBoard(gameBoard) {
-    
-  }
+    function updateBoard(row, col) {
+        const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+        const value = board.getCell(row, col);
+        cell.textContent = value;
+    }
 
-  function showMessage(msg) {
+    function showMessage(msg) {
 
-  }
+    }
 
-  return { renderBoard, showMessage };
+    return { updateBoard, showMessage };
+})();
+
+const gameController = (function () {
+    const playerOne = document.querySelector(".player-one");
+    const playerTwo = document.querySelector(".player-two");
+    let currentPlayer = playerOne;
+
+    const cells = document.querySelectorAll(".cell");
+
+    function clickCell(row, col) {
+        if (board.setCell(row, col, currentPlayer == playerOne ? "X" : "O")) {
+            currentPlayer == playerOne ? currentPlayer = playerTwo : currentPlayer = playerOne;
+            displayController.updateBoard(row, col);
+        }
+    }
+
+    cells.forEach(cell => {
+        cell.addEventListener("click", () => {
+            const row = cell.dataset.row;
+            const col = cell.dataset.col;
+            clickCell(row, col);
+        });
+    });
+
 })();
