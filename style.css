@@ -17,24 +17,55 @@ body {
     padding: 0;
     box-sizing: border-box;
     background-color: var(--bg-white);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.hidden {
+.menu-screen.hidden, .play-screen.hidden {
     display: none;
+}
+
+.menu-screen {
+    display: flex;
+    justify-content: center;
+    margin-top: -20vh;
+}
+
+.menu-container, form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+
+.menu-container h1 {
+    font-size: 5rem;
+}
+
+.menu-container input {
+    font-size: 1rem;
+    padding: 0.5em;
+}
+
+.menu-container button {
+    padding: 0.25em 0.75em;
+    font-size: 1rem;
 }
 
 .play-screen {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 10vh;
-    gap: 7.5rem;
+    padding-top: 5vh;
+    gap: 2.5rem;
 }
 
 .players {
-    background-color: gainsboro;
     display: flex;
     gap: clamp(25rem, 25vw, 50rem);
+    padding: 2rem;
 }
 
 .player-one, .player-two {
@@ -48,7 +79,7 @@ body {
     display: grid;
     grid-template-columns: repeat(3, 10rem);
     grid-template-rows: repeat(3, 10rem);
-    gap: 10px;
+    gap: 0.5rem;
 }
 
 .cell {
@@ -58,4 +89,14 @@ body {
     justify-content: center;
     align-items: center;
     user-select: none;
+}
+
+.msg h2 {
+    font-size: 2rem;
+    min-height: 2.5rem;
+}
+
+.reset-btn {
+    padding: 0.25em 0.75em;
+    font-size: 1rem;
 }

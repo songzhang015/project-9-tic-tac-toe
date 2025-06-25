@@ -1,10 +1,5 @@
 /* JS File for Tic-Tac-Toe Project */
 
-// gameboard
-// displayController
-// player
-
-
 const board = (function initializeBoard() {
     const gameBoard = [];
     for (let i = 0; i < 3; i++) {
@@ -107,57 +102,6 @@ const board = (function initializeBoard() {
     return { gameBoard, print, reset, setCell, getCell, isDraw, isWin };
 })();
 
-function testBoard() {
-    console.log("Initializing board...")
-
-    console.log("-----");
-
-    console.log("Initial Board and Print Function:");
-    board.print();
-
-    console.log("-----");
-
-    console.log("Set 1st row to be X, get the cells, verify if winner:");
-    board.setCell(0, 0, "X");
-    board.setCell(0, 1, "X");
-    board.setCell(0, 2, "X");
-    board.print();
-
-    console.log("(0, 0): " + board.getCell(0, 0));
-    console.log("(0, 1): " + board.getCell(0, 1));
-    console.log("(0, 2): " + board.getCell(0, 2));
-    console.log("(1, 0): " + board.getCell(1, 0));
-
-    console.log("X: " + board.isWin("X"));
-    console.log("O: " + board.isWin("O"));
-    console.log("-----");
-
-    console.log("Set all to be X, verify if draw:");
-    board.setCell(1, 0, "X");
-    board.setCell(1, 1, "X");
-    board.setCell(1, 2, "X");
-    board.setCell(2, 0, "X");
-    board.setCell(2, 1, "X");
-    console.log("Testing if draw before all X: " + board.isDraw());
-    board.setCell(2, 2, "X");
-
-    board.print();
-    console.log("Now board is all X: " + board.isDraw());
-
-    console.log("-----");
-
-    console.log("Now trying to put O on top of X: ")
-    board.setCell(0, 0, "O");
-    board.setCell(0, 1, "O");
-    board.setCell(0, 2, "O");
-    board.print();
-
-    console.log("-----");
-    console.log("Reset");
-    board.reset();
-    board.print();
-}
-
 const displayController = (function () {
 
     function updateBoard(row, col) {
@@ -167,23 +111,62 @@ const displayController = (function () {
     }
 
     function showMessage(msg) {
-
+        const msgElement = document.querySelector(".msg h2")
+        msgElement.textContent = msg;
     }
 
-    return { updateBoard, showMessage };
+    function reset() {
+        document.querySelectorAll(".cell").forEach(cell => {
+            cell.textContent = "";
+        });
+        const msgElement = document.querySelector(".msg h2");
+        msgElement.textContent = "";
+    }
+
+    return { updateBoard, showMessage, reset};
 })();
 
 const gameController = (function () {
-    const playerOne = document.querySelector(".player-one");
-    const playerTwo = document.querySelector(".player-two");
-    let currentPlayer = playerOne;
+    let gameOver = false;
+    let playerOne;
+    let playerTwo;
+    let currentPlayer;
+    const p1ScoreElement = document.querySelector(".player-one h2");
+    const p2ScoreElement = document.querySelector(".player-two h2");
 
     const cells = document.querySelectorAll(".cell");
 
+    function createPlayer (name, symbol) {
+        return { name, symbol }
+    }
+    function switchPlayer() {
+        currentPlayer = currentPlayer == playerOne ? playerTwo : playerOne;
+    }
+    function getCurrentPlayer() {
+        return currentPlayer;
+    }
+
     function clickCell(row, col) {
-        if (board.setCell(row, col, currentPlayer == playerOne ? "X" : "O")) {
-            currentPlayer == playerOne ? currentPlayer = playerTwo : currentPlayer = playerOne;
+        if (gameOver) return;
+        if (board.setCell(row, col, currentPlayer.symbol)) {
             displayController.updateBoard(row, col);
+            if (board.isWin(currentPlayer.symbol)) {
+                gameOver = true;
+                displayController.showMessage(`${currentPlayer.name} wins!`)
+                if (currentPlayer == playerOne) {
+                    p1ScoreElement.textContent = parseInt(p1ScoreElement.textContent) + 1;
+                } else {
+                    p2ScoreElement.textContent = parseInt(p2ScoreElement.textContent) + 1;
+                }
+                return
+            }
+            if (board.isDraw()) {
+                gameOver = true;
+                displayController.showMessage("It's a draw!");
+                return;
+            }
+            switchPlayer();
+            displayController.showMessage(`${currentPlayer.name}'s turn`);
         }
     }
 
@@ -195,4 +178,43 @@ const gameController = (function () {
         });
     });
 
+    function startGame(name1, name2) {
+        playerOne = createPlayer(name1 || "Player 1", "X");
+        playerTwo = createPlayer(name2 || "Player 2", "O");
+        currentPlayer = playerOne;
+        board.reset();
+        displayController.reset();
+        p1TitleElement.textContent = inputOneElement.value || "Player 1";
+        p2TitleElement.textContent = inputTwoElement.value || "Player 2";
+        displayController.showMessage(`${currentPlayer.name}'s turn`);
+    }
+
+    const formElement = document.querySelector("form");
+    const menuScreenElement = document.querySelector(".menu-screen");
+    const playScreenElement = document.querySelector(".play-screen");
+    const inputOneElement = document.querySelector("input[placeholder='Player 1 Name']");
+    const inputTwoElement = document.querySelector("input[placeholder='Player 2 Name']");
+    const p1TitleElement = document.querySelector(".player-one h1");
+    const p2TitleElement = document.querySelector(".player-two h1");
+    const restartElement = document.querySelector(".reset-btn");
+
+    restartElement.addEventListener("click", (e) => {
+        e.preventDefault();
+        board.reset();
+        displayController.reset();
+        gameOver = false;
+        currentPlayer = playerOne;
+        displayController.showMessage(`${currentPlayer.name}'s turn`);
+    });
+
+    formElement.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const inputOne = inputOneElement.value;
+        const inputTwo = inputTwoElement.value;
+        menuScreenElement.classList.add("hidden");
+        playScreenElement.classList.remove("hidden");
+        startGame(inputOne, inputTwo);
+    });
+
+    return { getCurrentPlayer, switchPlayer, startGame };
 })();
